@@ -3,10 +3,17 @@
     <button @click="compare">cancel</button>
     <button @click="setObjCookie">Set Object to Cookie</button>
     <button @click="getCookie">Get Cookie Content</button>
+
+    <hr>
+    {{todos}}
   </div>
 </template>
 
 <script>
+// import Swal from 'sweetalert2/dist/sweetalert2.js'
+// import 'sweetalert2/src/sweetalert2.scss'
+// ES6 Modules or TypeScript
+import Swal from 'sweetalert2';
 
 //    function setCookie(name,value) {
 //     document.cookie = name + "=" + (value || "")  + "; path=/";
@@ -30,29 +37,67 @@ function getCookie(name) {
     return null;
 }
 
-
 export default {
-  // data() {
-  //   return {
-  //         person : { name:'joe', age: 7, color:'green'}
-  //     }
-  //   },
+
+  data() {
+    return {
+      todos:null
+    }
+  },
+  created(){
+    this.getApiData();
+  },
+
   methods: {
     compare() {
-        console.log(JSON.stringify(person) + "---person from local");
-        console.log(returnItem + "---person from cookie");
+        // console.log(JSON.stringify(person) + "---person from local");
+        // console.log(returnItem + "---person from cookie");
 
         if(JSON.stringify(person) === returnItem) {
-          console.log("no changes, DON'T show modal");
+          console.log("no changes, DON'T show modal"); 
         } else {
-          console.log("changes made, SHOW modal");
+          // console.log("changes made, SHOW modal");
+          /////////////////////////////////////////// swal
+          Swal.fire({
+              title: 'You made changes',
+              text: "are you sure you want to leave this page? ",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes!'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                Swal.fire(
+                  'ok!',
+                  'Go to Somewhere',
+                  'success'
+                )
+              }
+            })
+        /////////////////////////////////////////// swal
         }
     },
 
+    getApiData() {
+      fetch('https://jsonplaceholder.typicode.com/todos')
+  .then(response => response.json())
+  .then(json => this.todos = json)
+    },
+
+
     setObjCookie() {
       let a = JSON.stringify(person);
-      this.setCookie("personDetails", a);
-      console.log(a);
+
+      let x = this.todos.map(todo =>  JSON.stringify(todo));
+
+      console.log(x);
+
+      // for(let i=0; )
+
+      this.setCookie("todos", x);
+      // this.$forceUpdate();
+      // console.log(a);
     },
 
     setCookie(name,value) {
